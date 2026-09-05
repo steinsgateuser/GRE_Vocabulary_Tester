@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRE Vocabulary Trainer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f6fa;
+            color: #1f2937;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Main container */
+        .container {
+            width: 720px;
+            max-width: 92%;
+            background: white;
+            padding: 45px;
+            border-radius: 22px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Start screen */
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-title {
+            font-size: 38px;
+            font-weight: 750;
+            margin-bottom: 12px;
+        }
+
+        .start-subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        /* Level selection */
+        .level-selection {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .level-button {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.15s;
+        }
+
+        .level-button:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
+        }
+
+        .level-button.selected {
+            border-color: #111827;
+            background: #f3f4f6;
+        }
+
+        .level-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .level-description {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .level-small {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .selected-level {
+            min-height: 24px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Number input */
+        .word-count-input {
+            width: 320px;
+            max-width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 20px;
+            text-align: center;
+            outline: none;
+        }
+
+        .word-count-input:focus {
+            border-color: #111827;
+        }
+
+        /* Start button */
+        .start-button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 14px 35px;
+            border: none;
+            border-radius: 11px;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .start-button:hover {
+            background: #374151;
+        }
+
+        .start-error {
+            color: #dc2626;
+            margin-top: 15px;
+            min-height: 20px;
+        }
+
+        /* Quiz screen */
+        .quiz-screen {
+            display: none;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .title {
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .progress {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* Word */
+        .word {
+            text-align: center;
+            font-size: 58px;
+            font-weight: 750;
+            letter-spacing: -2px;
+            margin-bottom: 35px;
+        }
+
+        /* View options button */
+        .view-options-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .view-options-button {
+            padding: 14px 30px;
+            border-radius: 11px;
+            border: 2px solid #111827;
+            background: white;
+            color: #111827;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .view-options-button:hover {
+            background: #f3f4f6;
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 15px;
+        }
+
+        .options-hidden {
+            display: none;
+        }
+
+        .option {
+            width: 100%;
+            min-height: 70px;
+            padding: 18px 20px;
+            border-radius: 13px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            text-align: left;
+            font-size: 17px;
+            line-height: 1.45;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, transform 0.15s;
+        }
+
+        .option:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
+        }
+
+        .option.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+            cursor: default;
+        }
+
+        .option.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+            cursor: default;
+        }
+
+        /* I don't know */
+        .dont-know {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 11px;
+            border: 2px solid #e5e7eb;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .dont-know:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .dont-know:disabled {
+            cursor: default;
+            opacity: 0.6;
+        }
+
+        /* Result */
+        .result {
+            text-align: center;
+            min-height: 28px;
+            margin-top: 22px;
+            font-size: 18px;
+            font-weight: 650;
+        }
+
+        /* Next button */
+        .next-button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 13px 30px;
+            border: none;
+            border-radius: 10px;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .next-button:hover {
+            background: #374151;
+        }
+
+        .next-button:disabled {
+            background: #d1d5db;
+            cursor: default;
+        }
+
+        /* Results screen */
+        .results-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .results-title {
+            font-size: 38px;
+            font-weight: 750;
+            margin-bottom: 25px;
+        }
+
+        .final-score {
+            font-size: 55px;
+            font-weight: 750;
+            margin-bottom: 10px;
+        }
+
+        .results-message {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .restart-button {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 11px;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .restart-button:hover {
+            background: #374151;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .level-selection {
+                flex-direction: column;
+            }
+
+            .word {
+                font-size: 44px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Start screen -->
+    <div id="startScreen" class="start-screen">
+        <div class="start-title">GRE Vocabulary Trainer</div>
+        <div class="start-subtitle">Choose your vocabulary pool</div>
+
+        <div class="level-selection">
+            <button id="level1Button" class="level-button">
+                <div class="level-title">Level 1</div>
+                <div class="level-description">Selected Words</div>
+                <div class="level-small">For my pupu</div>
+            </button>
+
+            <button id="level2Button" class="level-button">
+                <div class="level-title">Level 2</div>
+                <div class="level-description">Complete Vocabulary</div>
+                <div class="level-small">Test from the entire KB</div>
+            </button>
+        </div>
+
+        <div id="selectedLevel" class="selected-level">Select a level</div>
+
+        <div class="start-subtitle">How many words do you want to test?</div>
+
+        <input
+            id="wordCount"
+            class="word-count-input"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            placeholder="Enter number of words"
+        >
+
+        <button id="startButton" class="start-button">Start Test</button>
+
+        <div id="startError" class="start-error"></div>
+    </div>
+
+    <!-- Quiz screen -->
+    <div id="quizScreen" class="quiz-screen">
+        <div class="header">
+            <div class="title">GRE Vocabulary Trainer</div>
+            <div class="progress">
+                <span id="currentNumber">1</span> / <span id="totalNumber">10</span>
+            </div>
+        </div>
+
+        <div id="word" class="word">Loading...</div>
+
+        <div id="viewOptionsContainer" class="view-options-container">
+            <button id="viewOptionsButton" class="view-options-button">View Options</button>
+        </div>
+
+        <div id="options" class="options options-hidden"></div>
+
+        <button id="dontKnow" class="dont-know">I Don't Know</button>
+
+        <div id="result" class="result"></div>
+
+        <button id="nextButton" class="next-button" disabled>Next Word →</button>
+    </div>
+
+    <!-- Results screen -->
+    <div id="resultsScreen" class="results-screen">
+        <div class="results-title">Test Complete</div>
+        <div id="finalScore" class="final-score">0 / 10</div>
+        <div id="resultsMessage" class="results-message"></div>
+        <button id="restartButton" class="restart-button">New Test</button>
+    </div>
+
+</div>
+
+<script>
+
+// ---------------------------------------------------------------------------
+// Global state
+// ---------------------------------------------------------------------------
+
+let questions = [];
+let currentQuestionIndex = 0;
+let score = 0;
+let answered = false;
+let selectedLevel = null;
+
+// ---------------------------------------------------------------------------
+// Elements
+// ---------------------------------------------------------------------------
+
+const startScreen = document.getElementById("startScreen");
+const quizScreen = document.getElementById("quizScreen");
+const resultsScreen = document.getElementById("resultsScreen");
+const optionsContainer = document.getElementById("options");
+const viewOptionsButton = document.getElementById("viewOptionsButton");
+
+// ---------------------------------------------------------------------------
+// Level selection
+// ---------------------------------------------------------------------------
+
+document.getElementById("level1Button").addEventListener("click", () => selectLevel(1));
+document.getElementById("level2Button").addEventListener("click", () => selectLevel(2));
+
+function selectLevel(level) {
+    selectedLevel = level;
+
+    const level1Button = document.getElementById("level1Button");
+    const level2Button = document.getElementById("level2Button");
+
+    level1Button.classList.remove("selected");
+    level2Button.classList.remove("selected");
+
+    if (level === 1) {
+        level1Button.classList.add("selected");
+        document.getElementById("selectedLevel").textContent = "Level 1 — Selected Words";
+    } else {
+        level2Button.classList.add("selected");
+        document.getElementById("selectedLevel").textContent = "Level 2 — Complete Vocabulary";
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Start test
+// ---------------------------------------------------------------------------
+
+document.getElementById("startButton").addEventListener("click", startTest);
+
+async function startTest() {
+    const input = document.getElementById("wordCount");
+    const numberOfWords = parseInt(input.value.trim(), 10);
+    const error = document.getElementById("startError");
+
+    error.textContent = "";
+
+    if (selectedLevel === null) {
+        error.textContent = "Please select a level.";
+        return;
+    }
+
+    if (isNaN(numberOfWords) || numberOfWords < 1) {
+        error.textContent = "Please enter a valid number of words.";
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/start-test", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                level: selectedLevel,
+                number_of_words: numberOfWords
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            error.textContent = data.error || "Unable to start test.";
+            return;
+        }
+
+        questions = data.questions;
+        currentQuestionIndex = 0;
+        score = 0;
+
+        startScreen.style.display = "none";
+        resultsScreen.style.display = "none";
+        quizScreen.style.display = "block";
+
+        showQuestion();
+    } catch (error) {
+        console.error(error);
+        document.getElementById("startError").textContent = "Something went wrong. Check the backend.";
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Show question
+// ---------------------------------------------------------------------------
+
+function showQuestion() {
+    answered = false;
+
+    const question = questions[currentQuestionIndex];
+
+    document.getElementById("currentNumber").textContent = currentQuestionIndex + 1;
+    document.getElementById("totalNumber").textContent = questions.length;
+    document.getElementById("word").textContent = question.word;
+    document.getElementById("result").textContent = "";
+    document.getElementById("nextButton").disabled = true;
+    document.getElementById("dontKnow").disabled = false;
+    document.getElementById("viewOptionsContainer").style.display = "flex";
+
+    optionsContainer.innerHTML = "";
+    optionsContainer.classList.add("options-hidden");
+
+    question.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.textContent = option.text;
+        button.onclick = () => selectOption(index);
+        optionsContainer.appendChild(button);
+    });
+}
+
+// ---------------------------------------------------------------------------
+// View options
+// ---------------------------------------------------------------------------
+
+viewOptionsButton.addEventListener("click", () => {
+    optionsContainer.classList.remove("options-hidden");
+    document.getElementById("viewOptionsContainer").style.display = "none";
+});
+
+// ---------------------------------------------------------------------------
+// Select option
+// ---------------------------------------------------------------------------
+
+function selectOption(selectedIndex) {
+    if (answered) return;
+    answered = true;
+
+    const question = questions[currentQuestionIndex];
+    const buttons = document.querySelectorAll(".option");
+    const selected = question.options[selectedIndex];
+
+    if (selected.correct) {
+        score++;
+        buttons[selectedIndex].classList.add("correct");
+        document.getElementById("result").textContent = "✓ Correct!";
+    } else {
+        buttons[selectedIndex].classList.add("wrong");
+
+        question.options.forEach((option, index) => {
+            if (option.correct) {
+                buttons[index].classList.add("correct");
+            }
+        });
+
+        document.getElementById("result").textContent = "✗ Incorrect";
+    }
+
+    buttons.forEach(button => button.disabled = true);
+    document.getElementById("dontKnow").disabled = true;
+    document.getElementById("nextButton").disabled = false;
+}
+
+// ---------------------------------------------------------------------------
+// I don't know
+// ---------------------------------------------------------------------------
+
+document.getElementById("dontKnow").addEventListener("click", dontKnow);
+
+function dontKnow() {
+    if (answered) return;
+    answered = true;
+
+    const question = questions[currentQuestionIndex];
+    const buttons = document.querySelectorAll(".option");
+
+    optionsContainer.classList.remove("options-hidden");
+    document.getElementById("viewOptionsContainer").style.display = "none";
+
+    question.options.forEach((option, index) => {
+        if (option.correct) {
+            buttons[index].classList.add("correct");
+        }
+    });
+
+    buttons.forEach(button => button.disabled = true);
+
+    document.getElementById("result").textContent = "I Don't Know";
+    document.getElementById("dontKnow").disabled = true;
+    document.getElementById("nextButton").disabled = false;
+}
+
+// ---------------------------------------------------------------------------
+// Next question
+// ---------------------------------------------------------------------------
+
+document.getElementById("nextButton").addEventListener("click", nextQuestion);
+
+function nextQuestion() {
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex >= questions.length) {
+        showResults();
+        return;
+    }
+
+    showQuestion();
+}
+
+// ---------------------------------------------------------------------------
+// Show results
+// ---------------------------------------------------------------------------
+
+function showResults() {
+    quizScreen.style.display = "none";
+    resultsScreen.style.display = "block";
+
+    document.getElementById("finalScore").textContent = `${score} / ${questions.length}`;
+
+    const percentage = Math.round((score / questions.length) * 100);
+    let message;
+
+    if (percentage >= 90) {
+        message = "Excellent! 🔥";
+    } else if (percentage >= 75) {
+        message = "Very good!";
+    } else if (percentage >= 60) {
+        message = "Good start. Keep practicing.";
+    } else {
+        message = "These words need some more work.";
+    }
+
+    document.getElementById("resultsMessage").textContent = `${percentage}% — ${message}`;
+}
+
+// ---------------------------------------------------------------------------
+// Restart
+// ---------------------------------------------------------------------------
+
+document.getElementById("restartButton").addEventListener("click", () => {
+    resultsScreen.style.display = "none";
+    startScreen.style.display = "block";
+
+    document.getElementById("wordCount").value = "";
+
+    selectedLevel = null;
+    document.getElementById("level1Button").classList.remove("selected");
+    document.getElementById("level2Button").classList.remove("selected");
+    document.getElementById("selectedLevel").textContent = "Select a level";
+
+    document.getElementById("startError").textContent = "";
+    document.getElementById("wordCount").focus();
+});
+
+// ---------------------------------------------------------------------------
+// Enter key to start
+// ---------------------------------------------------------------------------
+
+document.getElementById("wordCount").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        startTest();
+    }
+});
+
+</script>
+
+</body>
+</html>
