@@ -2,45 +2,72 @@ import random
 
 from flask import Flask, render_template, jsonify, request
 
-from vocab_processing import get_vocab_data
-
-# ---------------------------------------------------------------------------
-# Flask app setup
-# ---------------------------------------------------------------------------
+from vocab_processing import get_vocab_data, normalize_word
 
 app = Flask(__name__)
 
-# ---------------------------------------------------------------------------
-# Load vocabulary
-# ---------------------------------------------------------------------------
+df = get_vocab_data()
 
-df, level_1_df, level_2_df = get_vocab_data()
-
-print(f"Total vocabulary: {len(level_2_df)} rows")
-print(f"Level 1 vocabulary: {len(level_1_df)} rows")
+print(f"Total vocabulary: {len(df)} rows")
 
 
-# ---------------------------------------------------------------------------
-# Test generation
-# ---------------------------------------------------------------------------
+def generate_test(number_of_words):
+    """Generate a random test from the complete vocabulary."""
 
-def generate_test(number_of_words, level):
-    """Build a list of multiple-choice vocabulary questions."""
+    test_pool = df.copy()
 
-    # Select vocabulary pool for the requested level
-    test_pool = level_1_df.copy() if level == 1 else level_2_df.copy()
-
-    # Remove rows missing required fields
-    test_pool = test_pool.dropna(subset=["Word", "Connotation", "Cluster"])
+    test_pool = test_pool.dropna(
+        subset=["Word", "Connotation", "Cluster"]
+    )
 
     if len(test_pool) == 0:
-        raise ValueError(f"No vocabulary words available for Level {level}.")
+        raise ValueError("No vocabulary words available.")
 
-    # Don't ask for more words than exist
     number_of_words = min(number_of_words, len(test_pool))
 
-    # Randomly select distinct words
-    test_df = test_pool.sample(n=number_of_words, replace=False).reset_index(drop=True)
+    test_df = test_pool.sample(
+        n=number_of_words,
+        replace=False
+    ).reset_index(drop=True)
+
+    return build_questions(test_df)
+
+
+def generate_test_from_words(words):
+    """Generate a test using only the supplied vocabulary words."""
+
+    if not words:
+        raise ValueError("No mistake words were supplied.")
+
+    requested_words = {
+        normalize_word(word)
+        for word in words
+        if str(word).strip()
+    }
+
+    test_pool = df[
+        df["Word_Normalized"].isin(requested_words)
+    ].copy()
+
+    test_pool = test_pool.dropna(
+        subset=["Word", "Connotation", "Cluster"]
+    )
+
+    if len(test_pool) == 0:
+        raise ValueError("None of the supplied words were found.")
+
+    # Keep one row per requested word.
+    test_pool = (
+        test_pool
+        .drop_duplicates(subset=["Word_Normalized"])
+        .reset_index(drop=True)
+    )
+
+    return build_questions(test_pool)
+
+
+def build_questions(test_df):
+    """Convert vocabulary rows into multiple-choice questions."""
 
     test_questions = []
 
@@ -49,8 +76,10 @@ def generate_test(number_of_words, level):
         target_cluster = row["Cluster"]
         correct_connotation = row["Connotation"]
 
-        # Candidate wrong answers: different cluster, non-null connotation
-        other_df = df[(df["Cluster"] != target_cluster) & (df["Connotation"].notna())]
+        other_df = df[
+            (df["Cluster"] != target_cluster)
+            & (df["Connotation"].notna())
+        ]
 
         other_connotations = (
             other_df["Connotation"]
@@ -60,7 +89,6 @@ def generate_test(number_of_words, level):
             .tolist()
         )
 
-        # Exclude the correct answer from the distractor pool
         other_connotations = [
             connotation
             for connotation in other_connotations
@@ -68,25 +96,41 @@ def generate_test(number_of_words, level):
         ]
 
         if len(other_connotations) < 2:
-            raise ValueError("Not enough unique connotations from other clusters.")
+            raise ValueError(
+                "Not enough unique connotations from other clusters."
+            )
 
-        wrong_connotations = random.sample(other_connotations, 2)
+        wrong_connotations = random.sample(
+            other_connotations,
+            2
+        )
 
         options = [
-            {"text": correct_connotation, "correct": True},
-            {"text": wrong_connotations[0], "correct": False},
-            {"text": wrong_connotations[1], "correct": False},
+            {
+                "text": correct_connotation,
+                "correct": True
+            },
+            {
+                "text": wrong_connotations[0],
+                "correct": False
+            },
+            {
+                "text": wrong_connotations[1],
+                "correct": False
+            }
         ]
+
         random.shuffle(options)
 
-        test_questions.append({"word": word, "options": options})
+        test_questions.append({
+            "word": word,
+            "options": options
+        })
+
+    random.shuffle(test_questions)
 
     return test_questions
 
-
-# ---------------------------------------------------------------------------
-# Routes
-# ---------------------------------------------------------------------------
 
 @app.route("/")
 def home():
@@ -98,55 +142,85 @@ def start_test():
     data = request.get_json()
 
     if not data:
-        return jsonify({"error": "No request data received."}), 400
+        return jsonify({
+            "error": "No request data received."
+        }), 400
 
-    level = data.get("level")
+    mistake_words = data.get("mistake_words")
+
+    # Revisit mistakes mode
+    if mistake_words is not None:
+        if not isinstance(mistake_words, list):
+            return jsonify({
+                "error": "Mistake words must be a list."
+            }), 400
+
+        if len(mistake_words) == 0:
+            return jsonify({
+                "error": "No mistake words available."
+            }), 400
+
+        try:
+            questions = generate_test_from_words(
+                mistake_words
+            )
+        except Exception as e:
+            print("ERROR GENERATING REVIEW TEST:", e)
+
+            return jsonify({
+                "error": str(e)
+            }), 500
+
+        return jsonify({
+            "total_questions": len(questions),
+            "questions": questions,
+            "mode": "mistakes"
+        })
+
+    # Normal test mode
     number_of_words = data.get("number_of_words")
 
-    # Validate level
-    try:
-        level = int(level)
-    except (TypeError, ValueError):
-        return jsonify({"error": "Please select a valid level."}), 400
-
-    if level not in (1, 2):
-        return jsonify({"error": "Level must be either 1 or 2."}), 400
-
-    # Validate number of words
     try:
         number_of_words = int(number_of_words)
     except (TypeError, ValueError):
-        return jsonify({"error": "Number of words must be an integer."}), 400
+        return jsonify({
+            "error": "Number of words must be an integer."
+        }), 400
 
     if number_of_words < 1:
-        return jsonify({"error": "Number of words must be at least 1."}), 400
+        return jsonify({
+            "error": "Number of words must be at least 1."
+        }), 400
 
-    # Check vocabulary availability for the selected level
-    available_words = len(level_1_df) if level == 1 else len(level_2_df)
+    available_words = len(
+        df.dropna(subset=["Word", "Connotation", "Cluster"])
+    )
 
     if available_words == 0:
-        return jsonify({"error": f"No vocabulary words are available for Level {level}."}), 400
+        return jsonify({
+            "error": "No vocabulary words are available."
+        }), 400
 
     if number_of_words > available_words:
-        return jsonify({"error": f"Only {available_words} words are available for Level {level}."}), 400
+        return jsonify({
+            "error": f"Only {available_words} words are available."
+        }), 400
 
-    # Generate the test
     try:
-        questions = generate_test(number_of_words, level)
+        questions = generate_test(number_of_words)
     except Exception as e:
         print("ERROR GENERATING TEST:", e)
-        return jsonify({"error": str(e)}), 500
+
+        return jsonify({
+            "error": str(e)
+        }), 500
 
     return jsonify({
-        "level": level,
         "total_questions": len(questions),
         "questions": questions,
+        "mode": "normal"
     })
 
-
-# ---------------------------------------------------------------------------
-# Run app
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     app.run(debug=True)
