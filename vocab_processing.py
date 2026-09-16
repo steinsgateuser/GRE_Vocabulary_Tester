@@ -4,7 +4,7 @@ import re
 import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-EXCEL_PATH = os.path.join(BASE_DIR, "Vocabulary_KB.xlsx")
+EXCEL_PATH = os.path.join(BASE_DIR, "Voabulary_GRE_1000_Words.xlsx")
 
 
 def normalize_word(word):

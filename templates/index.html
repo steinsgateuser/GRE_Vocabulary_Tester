@@ -1205,26 +1205,21 @@
         option,
         index
     ) {
-
         if (selectedOption !== null) {
             return;
         }
 
-
         selectedOption = index;
-
 
         const buttons =
             optionsElement.querySelectorAll(
                 ".option-button"
             );
 
-
         buttons.forEach(
             (optionButton, optionIndex) => {
 
                 optionButton.disabled = true;
-
 
                 const currentOption =
                     questions[
@@ -1233,40 +1228,41 @@
                         optionIndex
                     ];
 
-
                 if (currentOption.correct) {
-
                     optionButton.classList.add(
                         "correct"
                     );
-
                 }
-
             }
         );
 
-
         if (!option.correct) {
-
             button.classList.add(
                 "incorrect"
             );
-
         }
-
 
         recordAnswer(
             questions[currentQuestionIndex].word,
             option.correct
         );
 
-
-        nextButton.disabled = false;
-
         dontKnowButton.disabled = true;
 
         updateAnsweredCount();
 
+        // Correct answer → automatically move to next word.
+        if (option.correct) {
+
+            setTimeout(() => {
+                goToNextQuestion();
+            }, 100);
+
+            return;
+        }
+
+        // Wrong answer → wait for user to click Next Word.
+        nextButton.disabled = false;
     }
 
 
@@ -1275,43 +1271,51 @@
     // =============================
 
     function handleDontKnow() {
-
         if (selectedOption !== null) {
             return;
         }
 
+        selectedOption = "dont-know";
 
-        selectedOption =
-            "dont-know";
-
+        // Automatically reveal the options.
+        optionsElement.classList.remove("hidden");
+        showOptionsButton.classList.add("hidden");
 
         const buttons =
             optionsElement.querySelectorAll(
                 ".option-button"
             );
 
-
         buttons.forEach(
-            button => {
+            (button, optionIndex) => {
+
                 button.disabled = true;
+
+                const currentOption =
+                    questions[
+                        currentQuestionIndex
+                    ].options[
+                        optionIndex
+                    ];
+
+                if (currentOption.correct) {
+                    button.classList.add(
+                        "correct"
+                    );
+                }
             }
         );
-
 
         recordAnswer(
             questions[currentQuestionIndex].word,
             false
         );
 
-
         nextButton.disabled = false;
-
         dontKnowButton.disabled = true;
 
         updateAnsweredCount();
-
     }
-
 
     // =============================
     // RECORD ANSWER
