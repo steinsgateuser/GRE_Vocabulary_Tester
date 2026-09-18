@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,12 +42,8 @@
             color: var(--text);
         }
 
-        button,
-        input {
-            font: inherit;
-        }
-
         button {
+            font: inherit;
             cursor: pointer;
         }
 
@@ -59,15 +56,11 @@
             display: none !important;
         }
 
-        /* =========================
-           PAGE
-        ========================= */
-
         .container {
             width: 100%;
             max-width: 760px;
             margin: 0 auto;
-            padding: 55px 20px 70px;
+            padding: 45px 20px 70px;
         }
 
         /* =========================
@@ -76,7 +69,7 @@
 
         .app-header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .logo {
@@ -91,7 +84,8 @@
             color: white;
             font-size: 22px;
             font-weight: 800;
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.22);
+            box-shadow:
+                0 8px 20px rgba(79, 70, 229, 0.22);
         }
 
         h1 {
@@ -121,67 +115,77 @@
         }
 
         /* =========================
-           START SCREEN
+           DASHBOARD
         ========================= */
 
-        .start-content {
+        .dashboard-header {
             text-align: center;
+            margin-bottom: 28px;
         }
 
-        .start-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 20px;
-            border-radius: 18px;
-            background: var(--primary-light);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-        }
-
-        .start-content h2 {
+        .dashboard-header h2 {
             margin: 0 0 8px;
-            font-size: 23px;
+            font-size: 24px;
         }
 
-        .start-description {
-            margin: 0 auto 28px;
-            max-width: 480px;
+        .dashboard-header p {
+            margin: 0;
             color: var(--muted);
-            line-height: 1.6;
             font-size: 14px;
         }
 
-        .input-group {
-            max-width: 360px;
-            margin: 0 auto;
-            text-align: left;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            height: 48px;
-            padding: 0 14px;
+        .stat-card {
+            padding: 20px 12px;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            outline: none;
-            background: #fafafa;
-            transition: 0.2s;
+            border-radius: 14px;
+            text-align: center;
+            background: #fafbfc;
         }
 
-        input[type="number"]:focus {
-            background: white;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
+        .stat-label {
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .stat-count {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .mastered-stat .stat-value {
+            color: var(--success);
+        }
+
+        .review-stat .stat-value {
+            color: var(--danger);
+        }
+
+        .new-stat .stat-value {
+            color: var(--primary);
+        }
+
+        .dashboard-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         /* =========================
@@ -210,7 +214,8 @@
         .primary-button:hover:not(:disabled) {
             background: var(--primary-hover);
             transform: translateY(-1px);
-            box-shadow: 0 5px 12px rgba(79, 70, 229, 0.2);
+            box-shadow:
+                0 5px 12px rgba(79, 70, 229, 0.2);
         }
 
         .secondary-button {
@@ -315,7 +320,7 @@
         }
 
         /* =========================
-           SHOW OPTIONS
+           OPTIONS
         ========================= */
 
         .show-options-section {
@@ -326,10 +331,6 @@
         .show-options-section .primary-button {
             width: 100%;
         }
-
-        /* =========================
-           OPTIONS
-        ========================= */
 
         .options {
             display: flex;
@@ -404,6 +405,77 @@
             margin-bottom: 10px;
             color: var(--muted);
             font-size: 12px;
+        }
+
+        /* =========================
+           REVIEW
+        ========================= */
+
+        .review-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .review-header h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .review-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .review-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .review-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .review-table th,
+        .review-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .review-table th {
+            background: #fafbfc;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .review-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .review-word {
+            font-weight: 700;
+        }
+
+        .review-progress {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .empty-review {
+            padding: 35px 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .review-actions {
+            margin-top: 20px;
         }
 
         /* =========================
@@ -483,6 +555,17 @@
         }
 
         /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            padding: 30px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* =========================
            MOBILE
         ========================= */
 
@@ -505,6 +588,22 @@
                 font-size: 36px;
             }
 
+            .stats-grid {
+                gap: 7px;
+            }
+
+            .stat-card {
+                padding: 16px 8px;
+            }
+
+            .stat-value {
+                font-size: 23px;
+            }
+
+            .stat-count {
+                font-size: 11px;
+            }
+
             .quiz-actions {
                 grid-template-columns: 1fr;
             }
@@ -516,7 +615,6 @@
             .score {
                 font-size: 50px;
             }
-
         }
     </style>
 </head>
@@ -535,7 +633,9 @@
             V
         </div>
 
-        <h1>GRE Vocabulary Tester</h1>
+        <h1>
+            GRE Vocabulary Tester
+        </h1>
 
         <div class="subtitle">
             Build vocabulary. Identify weaknesses. Master them.
@@ -545,57 +645,130 @@
 
 
     <!-- =========================
-         START SCREEN
+         DASHBOARD
     ========================== -->
 
     <div
-        id="start-screen"
+        id="dashboard-screen"
         class="card"
     >
 
-        <div class="start-content">
+        <div class="dashboard-header">
 
-            <div class="start-icon">
-                📚
-            </div>
+            <h2>
+                Welcome back, <span id="username"></span> 👋
+            </h2>
 
-            <h2>Start a Vocabulary Test</h2>
-
-            <p class="start-description">
-                Test yourself across the complete vocabulary bank.
-                Any words you miss can be revisited until you get
-                them right.
+            <p>
+                Keep learning until you're ready to stop.
             </p>
 
-            <div class="input-group">
+        </div>
 
-                <label for="number-of-words">
-                    Number of words
-                </label>
 
-                <input
-                    id="number-of-words"
-                    type="number"
-                    min="1"
-                    value="20"
-                >
+        <div class="stats-grid">
 
-                <button
-                    id="start-button"
-                    class="primary-button full-width"
-                    style="margin-top: 12px;"
-                >
-                    Start Test
-                </button>
+            <div class="stat-card mastered-stat">
+
+                <div class="stat-label">
+                    Mastered
+                </div>
 
                 <div
-                    id="start-error"
-                    class="error hidden"
-                ></div>
+                    id="mastered-percent"
+                    class="stat-value"
+                >
+                    0%
+                </div>
+
+                <div
+                    id="mastered-count"
+                    class="stat-count"
+                >
+                    0 words
+                </div>
+
+            </div>
+
+
+            <div class="stat-card review-stat">
+
+                <div class="stat-label">
+                    Review
+                </div>
+
+                <div
+                    id="review-percent"
+                    class="stat-value"
+                >
+                    0%
+                </div>
+
+                <div
+                    id="review-count"
+                    class="stat-count"
+                >
+                    0 words
+                </div>
+
+            </div>
+
+
+            <div class="stat-card new-stat">
+
+                <div class="stat-label">
+                    New
+                </div>
+
+                <div
+                    id="new-percent"
+                    class="stat-value"
+                >
+                    0%
+                </div>
+
+                <div
+                    id="new-count"
+                    class="stat-count"
+                >
+                    0 words
+                </div>
 
             </div>
 
         </div>
+
+
+        <div class="dashboard-actions">
+
+            <button
+                id="continue-button"
+                class="primary-button"
+            >
+                Continue Learning
+            </button>
+
+            <button
+                id="review-button"
+                class="secondary-button"
+            >
+                Review Words
+            </button>
+
+            <button
+                id="logout-button"
+                class="danger-button"
+            >
+                Logout
+            </button>
+
+        </div>
+
+
+        <div
+            id="dashboard-error"
+            class="error hidden"
+        ></div>
 
     </div>
 
@@ -609,8 +782,6 @@
         class="card hidden"
     >
 
-        <!-- Quiz Header -->
-
         <div class="quiz-top">
 
             <div class="quiz-meta">
@@ -618,12 +789,15 @@
                 <span
                     id="mode-label"
                     class="mode-label"
-                ></span>
+                >
+                    Continue Learning
+                </span>
 
                 <span
                     id="progress"
                     class="progress-text"
-                ></span>
+                >
+                </span>
 
             </div>
 
@@ -646,8 +820,6 @@
         </div>
 
 
-        <!-- Word -->
-
         <div class="word-section">
 
             <div class="word-label">
@@ -662,8 +834,6 @@
         </div>
 
 
-        <!-- Show Options -->
-
         <div class="show-options-section">
 
             <button
@@ -676,15 +846,11 @@
         </div>
 
 
-        <!-- Options -->
-
         <div
             id="options"
             class="options hidden"
         ></div>
 
-
-        <!-- Actions -->
 
         <div class="quiz-actions">
 
@@ -706,12 +872,10 @@
         </div>
 
 
-        <!-- Submit -->
-
         <div class="submit-section">
 
             <div class="submit-hint">
-                You can submit at any point.
+                You can stop whenever you want.
             </div>
 
             <button
@@ -719,6 +883,53 @@
                 class="danger-button"
             >
                 Submit Test
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         REVIEW SCREEN
+    ========================== -->
+
+    <div
+        id="review-screen"
+        class="card hidden"
+    >
+
+        <div class="review-header">
+
+            <h2>
+                Review Words
+            </h2>
+
+            <p>
+                Words that need more practice.
+            </p>
+
+        </div>
+
+
+        <div
+            id="review-content"
+        >
+
+            <div class="loading">
+                Loading review words...
+            </div>
+
+        </div>
+
+
+        <div class="review-actions">
+
+            <button
+                id="back-dashboard-button"
+                class="secondary-button full-width"
+            >
+                Back to Dashboard
             </button>
 
         </div>
@@ -742,10 +953,12 @@
         <div
             id="score-mode"
             class="mode-label"
-        ></div>
+        >
+            Learning Session
+        </div>
 
         <h2>
-            Test Results
+            Session Results
         </h2>
 
         <div
@@ -770,17 +983,17 @@
         <div class="result-actions">
 
             <button
-                id="revisit-button"
-                class="primary-button hidden"
+                id="continue-after-score-button"
+                class="primary-button"
             >
-                Revisit Mistakes
+                Continue Learning
             </button>
 
             <button
-                id="new-test-button"
+                id="dashboard-after-score-button"
                 class="secondary-button"
             >
-                New Test
+                Back to Dashboard
             </button>
 
         </div>
@@ -792,55 +1005,79 @@
 
 <script>
 
-    // =============================
+    // =========================================================
     // STATE
-    // =============================
+    // =========================================================
 
     let questions = [];
 
     let currentQuestionIndex = 0;
 
-    /*
-     * ONLY incorrect vocabulary words
-     * from the current round.
-     */
-    let mistakeWords = [];
-
-    /*
-     * Answer state for the current round.
-     */
     let currentAnswers = [];
+
+    let mistakeWords = [];
 
     let selectedOption = null;
 
-    /*
-     * normal  = complete vocabulary
-     * mistakes = mistake review
-     */
-    let testMode = "normal";
+    let isLoadingBatch = false;
+
+    let sessionStarted = false;
 
 
-    // =============================
+    // =========================================================
     // DOM ELEMENTS
-    // =============================
+    // =========================================================
 
-    const startScreen =
-        document.getElementById("start-screen");
+    const dashboardScreen =
+        document.getElementById("dashboard-screen");
 
     const quizScreen =
         document.getElementById("quiz-screen");
 
+    const reviewScreen =
+        document.getElementById("review-screen");
+
     const scoreScreen =
         document.getElementById("score-screen");
 
-    const numberOfWordsInput =
-        document.getElementById("number-of-words");
 
-    const startButton =
-        document.getElementById("start-button");
+    const usernameElement =
+        document.getElementById("username");
 
-    const startError =
-        document.getElementById("start-error");
+
+    const masteredPercent =
+        document.getElementById("mastered-percent");
+
+    const reviewPercent =
+        document.getElementById("review-percent");
+
+    const newPercent =
+        document.getElementById("new-percent");
+
+
+    const masteredCount =
+        document.getElementById("mastered-count");
+
+    const reviewCount =
+        document.getElementById("review-count");
+
+    const newCount =
+        document.getElementById("new-count");
+
+
+    const continueButton =
+        document.getElementById("continue-button");
+
+    const reviewButton =
+        document.getElementById("review-button");
+
+    const logoutButton =
+        document.getElementById("logout-button");
+
+
+    const dashboardError =
+        document.getElementById("dashboard-error");
+
 
     const progress =
         document.getElementById("progress");
@@ -872,6 +1109,16 @@
     const submitButton =
         document.getElementById("submit-button");
 
+
+    const reviewContent =
+        document.getElementById("review-content");
+
+    const backDashboardButton =
+        document.getElementById(
+            "back-dashboard-button"
+        );
+
+
     const scoreMode =
         document.getElementById("score-mode");
 
@@ -884,56 +1131,31 @@
     const mistakeCount =
         document.getElementById("mistake-count");
 
-    const revisitButton =
-        document.getElementById("revisit-button");
 
-    const newTestButton =
-        document.getElementById("new-test-button");
+    const continueAfterScoreButton =
+        document.getElementById(
+            "continue-after-score-button"
+        );
+
+    const dashboardAfterScoreButton =
+        document.getElementById(
+            "dashboard-after-score-button"
+        );
 
 
-    // =============================
-    // START NORMAL TEST
-    // =============================
+    // =========================================================
+    // LOAD DASHBOARD
+    // =========================================================
 
-    async function startNormalTest() {
+    async function loadDashboard() {
 
-        const numberOfWords =
-            parseInt(numberOfWordsInput.value);
-
-        startError.classList.add("hidden");
-
-        if (
-            isNaN(numberOfWords) ||
-            numberOfWords < 1
-        ) {
-
-            startError.textContent =
-                "Please enter a valid number of words.";
-
-            startError.classList.remove("hidden");
-
-            return;
-        }
+        dashboardError.classList.add("hidden");
 
         try {
 
-            startButton.disabled = true;
-
             const response =
                 await fetch(
-                    "/api/start-test",
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            number_of_words:
-                                numberOfWords
-                        })
-                    }
+                    "/api/dashboard"
                 );
 
             const data =
@@ -943,78 +1165,175 @@
 
                 throw new Error(
                     data.error ||
-                    "Failed to start test."
+                    "Failed to load dashboard."
                 );
 
             }
 
-            beginQuiz(
-                data.questions,
-                "normal"
-            );
+
+            usernameElement.textContent =
+                data.username || "there";
+
+
+            masteredPercent.textContent =
+                `${data.mastered_pct}%`;
+
+            reviewPercent.textContent =
+                `${data.review_pct}%`;
+
+            newPercent.textContent =
+                `${data.new_pct}%`;
+
+
+            masteredCount.textContent =
+                `${data.mastered} word${data.mastered === 1 ? "" : "s"}`;
+
+            reviewCount.textContent =
+                `${data.review} word${data.review === 1 ? "" : "s"}`;
+
+            newCount.textContent =
+                `${data.new} word${data.new === 1 ? "" : "s"}`;
+
 
         } catch (error) {
 
-            startError.textContent =
+            dashboardError.textContent =
                 error.message;
 
-            startError.classList.remove("hidden");
-
-        } finally {
-
-            startButton.disabled = false;
+            dashboardError.classList.remove(
+                "hidden"
+            );
 
         }
     }
 
 
-    // =============================
-    // START MISTAKE TEST
-    // =============================
+    // =========================================================
+    // START / CONTINUE LEARNING
+    // =========================================================
 
-    async function startMistakeTest() {
+    async function startLearning() {
 
-        if (mistakeWords.length === 0) {
+        if (isLoadingBatch) {
             return;
         }
 
-        try {
+        sessionStarted = true;
 
-            revisitButton.disabled = true;
+        questions = [];
+
+        currentQuestionIndex = 0;
+
+        currentAnswers = [];
+
+        mistakeWords = [];
+
+        selectedOption = null;
+
+
+        dashboardScreen.classList.add(
+            "hidden"
+        );
+
+        reviewScreen.classList.add(
+            "hidden"
+        );
+
+        scoreScreen.classList.add(
+            "hidden"
+        );
+
+        quizScreen.classList.remove(
+            "hidden"
+        );
+
+
+        modeLabel.textContent =
+            "Continue Learning";
+
+
+        await loadNextBatch();
+
+    }
+
+
+    // =========================================================
+    // LOAD NEXT BATCH
+    // =========================================================
+
+    async function loadNextBatch() {
+
+        if (isLoadingBatch) {
+            return;
+        }
+
+        isLoadingBatch = true;
+
+        nextButton.disabled = true;
+
+        dontKnowButton.disabled = true;
+
+        showOptionsButton.disabled = true;
+
+
+        try {
 
             const response =
                 await fetch(
                     "/api/start-test",
                     {
                         method: "POST",
-
                         headers: {
-                            "Content-Type": "application/json"
+                            "Content-Type":
+                                "application/json"
                         },
-
-                        body: JSON.stringify({
-                            mistake_words:
-                                mistakeWords
-                        })
+                        body: JSON.stringify({})
                     }
                 );
 
+
             const data =
                 await response.json();
+
 
             if (!response.ok) {
 
                 throw new Error(
                     data.error ||
-                    "Failed to start review test."
+                    "Failed to load words."
                 );
 
             }
 
-            beginQuiz(
-                data.questions,
-                "mistakes"
-            );
+
+            if (
+                !data.questions ||
+                data.questions.length === 0
+            ) {
+
+                showNoWordsAvailable();
+
+                return;
+            }
+
+
+            questions =
+                questions.concat(
+                    data.questions
+                );
+
+
+            // If this is the first batch,
+            // immediately render the first word.
+
+            if (
+                currentQuestionIndex === 0
+            ) {
+
+                renderQuestion();
+
+            }
+
 
         } catch (error) {
 
@@ -1022,69 +1341,31 @@
 
         } finally {
 
-            revisitButton.disabled = false;
+            isLoadingBatch = false;
+
+            showOptionsButton.disabled = false;
 
         }
     }
 
 
-    // =============================
-    // BEGIN QUIZ
-    // =============================
-
-    function beginQuiz(
-        newQuestions,
-        mode
-    ) {
-
-        questions = newQuestions;
-
-        currentQuestionIndex = 0;
-
-        currentAnswers = [];
-
-        selectedOption = null;
-
-        testMode = mode;
-
-
-        startScreen.classList.add("hidden");
-
-        scoreScreen.classList.add("hidden");
-
-        quizScreen.classList.remove("hidden");
-
-
-        if (mode === "mistakes") {
-
-            modeLabel.textContent =
-                "Mistake Review";
-
-        } else {
-
-            modeLabel.textContent =
-                "Vocabulary Test";
-
-        }
-
-
-        submitButton.textContent =
-            "Submit Test";
-
-
-        renderQuestion();
-
-    }
-
-
-    // =============================
+    // =========================================================
     // RENDER QUESTION
-    // =============================
+    // =========================================================
 
     function renderQuestion() {
 
+        if (
+            currentQuestionIndex >=
+            questions.length
+        ) {
+            return;
+        }
+
+
         const question =
             questions[currentQuestionIndex];
+
 
         selectedOption = null;
 
@@ -1093,14 +1374,19 @@
             question.word;
 
 
+        const batchPosition =
+            (
+                currentQuestionIndex % 20
+            ) + 1;
+
+
         progress.textContent =
-            `Word ${currentQuestionIndex + 1} of ${questions.length}`;
+            `Word ${currentQuestionIndex + 1}`;
 
 
         const progressPercentage =
             (
-                (currentQuestionIndex + 1)
-                / questions.length
+                batchPosition / 20
             ) * 100;
 
 
@@ -1111,16 +1397,12 @@
         updateAnsweredCount();
 
 
-        // Reset options
-
         optionsElement.innerHTML = "";
 
         optionsElement.classList.add(
             "hidden"
         );
 
-
-        // Show Show Options
 
         showOptionsButton.classList.remove(
             "hidden"
@@ -1131,13 +1413,16 @@
             (option, index) => {
 
                 const button =
-                    document.createElement("button");
+                    document.createElement(
+                        "button"
+                    );
 
                 button.className =
                     "option-button";
 
                 button.textContent =
                     option.text;
+
 
                 button.addEventListener(
                     "click",
@@ -1148,6 +1433,7 @@
                     )
                 );
 
+
                 optionsElement.appendChild(
                     button
                 );
@@ -1156,32 +1442,21 @@
         );
 
 
-        dontKnowButton.disabled = false;
+        dontKnowButton.disabled =
+            false;
 
-        nextButton.disabled = true;
+        nextButton.disabled =
+            true;
 
-
-        if (
-            currentQuestionIndex ===
-            questions.length - 1
-        ) {
-
-            nextButton.textContent =
-                "Finish";
-
-        } else {
-
-            nextButton.textContent =
-                "Next Word";
-
-        }
+        nextButton.textContent =
+            "Next Word";
 
     }
 
 
-    // =============================
+    // =========================================================
     // SHOW OPTIONS
-    // =============================
+    // =========================================================
 
     function showOptions() {
 
@@ -1196,30 +1471,39 @@
     }
 
 
-    // =============================
+    // =========================================================
     // SELECT OPTION
-    // =============================
+    // =========================================================
 
-    function selectOption(
+    async function selectOption(
         button,
         option,
         index
     ) {
+
         if (selectedOption !== null) {
             return;
         }
+
 
         selectedOption = index;
 
+
         const buttons =
             optionsElement.querySelectorAll(
                 ".option-button"
             );
 
-        buttons.forEach(
-            (optionButton, optionIndex) => {
 
-                optionButton.disabled = true;
+        buttons.forEach(
+            (
+                optionButton,
+                optionIndex
+            ) => {
+
+                optionButton.disabled =
+                    true;
+
 
                 const currentOption =
                     questions[
@@ -1228,68 +1512,113 @@
                         optionIndex
                     ];
 
-                if (currentOption.correct) {
+
+                if (
+                    currentOption.correct
+                ) {
+
                     optionButton.classList.add(
                         "correct"
                     );
+
                 }
+
             }
         );
 
+
         if (!option.correct) {
+
             button.classList.add(
                 "incorrect"
             );
+
         }
 
-        recordAnswer(
-            questions[currentQuestionIndex].word,
-            option.correct
-        );
 
-        dontKnowButton.disabled = true;
+        const saved =
+            await recordAnswer(
+                questions[
+                    currentQuestionIndex
+                ].word,
+                option.correct
+            );
+
+
+        if (!saved) {
+            return;
+        }
+
+
+        dontKnowButton.disabled =
+            true;
+
 
         updateAnsweredCount();
 
-        // Correct answer → automatically move to next word.
+
+        // Correct → automatically advance.
+
         if (option.correct) {
 
-            setTimeout(() => {
-                goToNextQuestion();
-            }, 100);
+            setTimeout(
+                () => {
+                    goToNextQuestion();
+                },
+                100
+            );
 
             return;
         }
 
-        // Wrong answer → wait for user to click Next Word.
-        nextButton.disabled = false;
+
+        // Wrong → user must click Next.
+
+        nextButton.disabled =
+            false;
+
     }
 
 
-    // =============================
+    // =========================================================
     // I DON'T KNOW
-    // =============================
+    // =========================================================
 
-    function handleDontKnow() {
+    async function handleDontKnow() {
+
         if (selectedOption !== null) {
             return;
         }
 
-        selectedOption = "dont-know";
 
-        // Automatically reveal the options.
-        optionsElement.classList.remove("hidden");
-        showOptionsButton.classList.add("hidden");
+        selectedOption =
+            "dont-know";
+
+
+        optionsElement.classList.remove(
+            "hidden"
+        );
+
+        showOptionsButton.classList.add(
+            "hidden"
+        );
+
 
         const buttons =
             optionsElement.querySelectorAll(
                 ".option-button"
             );
 
-        buttons.forEach(
-            (button, optionIndex) => {
 
-                button.disabled = true;
+        buttons.forEach(
+            (
+                button,
+                optionIndex
+            ) => {
+
+                button.disabled =
+                    true;
+
 
                 const currentOption =
                     questions[
@@ -1298,30 +1627,52 @@
                         optionIndex
                     ];
 
-                if (currentOption.correct) {
+
+                if (
+                    currentOption.correct
+                ) {
+
                     button.classList.add(
                         "correct"
                     );
+
                 }
+
             }
         );
 
-        recordAnswer(
-            questions[currentQuestionIndex].word,
-            false
-        );
 
-        nextButton.disabled = false;
-        dontKnowButton.disabled = true;
+        const saved =
+            await recordAnswer(
+                questions[
+                    currentQuestionIndex
+                ].word,
+                false
+            );
+
+
+        if (!saved) {
+            return;
+        }
+
+
+        nextButton.disabled =
+            false;
+
+        dontKnowButton.disabled =
+            true;
+
 
         updateAnsweredCount();
+
     }
 
-    // =============================
-    // RECORD ANSWER
-    // =============================
 
-    function recordAnswer(
+    // =========================================================
+    // RECORD ANSWER
+    // =========================================================
+
+    async function recordAnswer(
         word,
         correct
     ) {
@@ -1329,21 +1680,77 @@
         currentAnswers[
             currentQuestionIndex
         ] = {
-
             word: word,
-
             answered: true,
-
             correct: correct
-
         };
 
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/record-answer",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            word: word,
+                            correct: correct
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                console.error(
+                    "Failed to save progress:",
+                    data.error
+                );
+
+                alert(
+                    data.error ||
+                    "Failed to save progress."
+                );
+
+                return false;
+            }
+
+
+            return true;
+
+
+        } catch (error) {
+
+            console.error(
+                "Failed to save progress:",
+                error
+            );
+
+            alert(
+                "Could not save your answer. " +
+                "Please try again."
+            );
+
+            return false;
+
+        }
     }
 
 
-    // =============================
+    // =========================================================
     // ANSWER COUNT
-    // =============================
+    // =========================================================
 
     function updateAnsweredCount() {
 
@@ -1361,39 +1768,43 @@
     }
 
 
-    // =============================
+    // =========================================================
     // NEXT QUESTION
-    // =============================
+    // =========================================================
 
-    function goToNextQuestion() {
+    async function goToNextQuestion() {
 
         if (selectedOption === null) {
             return;
         }
 
 
+        currentQuestionIndex++;
+
+
+        // -----------------------------------------------------
+        // Current batch exhausted.
+        // -----------------------------------------------------
+
         if (
             currentQuestionIndex >=
-            questions.length - 1
+            questions.length
         ) {
 
-            submitTest();
+            await loadNextBatch();
 
             return;
-
         }
 
-
-        currentQuestionIndex++;
 
         renderQuestion();
 
     }
 
 
-    // =============================
-    // SUBMIT TEST
-    // =============================
+    // =========================================================
+    // SUBMIT SESSION
+    // =========================================================
 
     function submitTest() {
 
@@ -1405,24 +1816,17 @@
             );
 
 
-        if (answeredQuestions.length === 0) {
+        if (
+            answeredQuestions.length === 0
+        ) {
 
             alert(
                 "Please answer at least one word before submitting."
             );
 
             return;
-
         }
 
-
-        /*
-         * IMPORTANT:
-         *
-         * Replace the previous mistake list
-         * with ONLY the words missed
-         * in THIS round.
-         */
 
         mistakeWords =
             answeredQuestions
@@ -1448,8 +1852,8 @@
         const percentage =
             Math.round(
                 (
-                    correctCount
-                    / totalAnswered
+                    correctCount /
+                    totalAnswered
                 ) * 100
             );
 
@@ -1463,9 +1867,9 @@
     }
 
 
-    // =============================
-    // SCORE SCREEN
-    // =============================
+    // =========================================================
+    // SCORE
+    // =========================================================
 
     function showScore(
         correctCount,
@@ -1482,6 +1886,10 @@
         );
 
 
+        scoreMode.textContent =
+            "Learning Session";
+
+
         scoreElement.textContent =
             `${percentage}%`;
 
@@ -1490,68 +1898,30 @@
             `${correctCount} / ${totalAnswered} correct`;
 
 
-        if (testMode === "mistakes") {
-
-            scoreMode.textContent =
-                "Mistake Review";
-
-        } else {
-
-            scoreMode.textContent =
-                "Vocabulary Test";
-
-        }
-
-
-        if (mistakeWords.length > 0) {
+        if (
+            mistakeWords.length > 0
+        ) {
 
             mistakeCount.textContent =
                 `${mistakeWords.length} word${mistakeWords.length === 1 ? "" : "s"} still need${mistakeWords.length === 1 ? "s" : ""} review.`;
 
-
-            revisitButton.textContent =
-                `Revisit ${mistakeWords.length} Mistake${mistakeWords.length === 1 ? "" : "s"}`;
-
-
-            revisitButton.classList.remove(
-                "hidden"
-            );
-
         } else {
 
             mistakeCount.textContent =
-                "🎉 No mistakes! You've cleared this round.";
-
-
-            revisitButton.classList.add(
-                "hidden"
-            );
+                "🎉 No mistakes in this session.";
 
         }
 
     }
 
 
-    // =============================
-    // NEW TEST
-    // =============================
+    // =========================================================
+    // REVIEW WORDS
+    // =========================================================
 
-    function startNewTest() {
+    async function showReviewWords() {
 
-        questions = [];
-
-        currentQuestionIndex = 0;
-
-        currentAnswers = [];
-
-        mistakeWords = [];
-
-        selectedOption = null;
-
-        testMode = "normal";
-
-
-        scoreScreen.classList.add(
+        dashboardScreen.classList.add(
             "hidden"
         );
 
@@ -1559,24 +1929,244 @@
             "hidden"
         );
 
-        startScreen.classList.remove(
+        scoreScreen.classList.add(
             "hidden"
         );
 
-        startError.classList.add(
+        reviewScreen.classList.remove(
             "hidden"
         );
+
+
+        reviewContent.innerHTML =
+            `
+            <div class="loading">
+                Loading review words...
+            </div>
+            `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/review-words"
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Failed to load review words."
+                );
+
+            }
+
+
+            if (
+                !data.words ||
+                data.words.length === 0
+            ) {
+
+                reviewContent.innerHTML =
+                    `
+                    <div class="empty-review">
+                        🎉 No words currently need review.
+                    </div>
+                    `;
+
+                return;
+            }
+
+
+            let rows = "";
+
+
+            data.words.forEach(
+                item => {
+
+                    rows += `
+                        <tr>
+
+                            <td class="review-word">
+                                ${escapeHtml(item.word)}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    item.meaning ||
+                                    "Meaning unavailable"
+                                )}
+                            </td>
+
+                            <td class="review-progress">
+                                ${item.progress} / 2
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            );
+
+
+            reviewContent.innerHTML =
+                `
+                <div class="review-table-wrapper">
+
+                    <table class="review-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Word
+                                </th>
+
+                                <th>
+                                    Meaning
+                                </th>
+
+                                <th>
+                                    Progress
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+                            ${rows}
+                        </tbody>
+
+                    </table>
+
+                </div>
+                `;
+
+
+        } catch (error) {
+
+            reviewContent.innerHTML =
+                `
+                <div class="error">
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </div>
+                `;
+
+        }
 
     }
 
 
-    // =============================
-    // EVENT LISTENERS
-    // =============================
+    // =========================================================
+    // ESCAPE HTML
+    // =========================================================
 
-    startButton.addEventListener(
+    function escapeHtml(value) {
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    // =========================================================
+    // BACK TO DASHBOARD
+    // =========================================================
+
+    async function showDashboard() {
+
+        quizScreen.classList.add(
+            "hidden"
+        );
+
+        reviewScreen.classList.add(
+            "hidden"
+        );
+
+        scoreScreen.classList.add(
+            "hidden"
+        );
+
+        dashboardScreen.classList.remove(
+            "hidden"
+        );
+
+
+        await loadDashboard();
+
+    }
+
+
+    // =========================================================
+    // NO WORDS AVAILABLE
+    // =========================================================
+
+    function showNoWordsAvailable() {
+
+        quizScreen.classList.add(
+            "hidden"
+        );
+
+        dashboardScreen.classList.remove(
+            "hidden"
+        );
+
+
+        alert(
+            "You have mastered all available vocabulary words! 🎉"
+        );
+
+
+        loadDashboard();
+
+    }
+
+
+    // =========================================================
+    // LOGOUT
+    // =========================================================
+
+    function logout() {
+
+        window.location.href =
+            "/logout";
+
+    }
+
+
+    // =========================================================
+    // EVENT LISTENERS
+    // =========================================================
+
+    continueButton.addEventListener(
         "click",
-        startNormalTest
+        startLearning
+    );
+
+
+    reviewButton.addEventListener(
+        "click",
+        showReviewWords
+    );
+
+
+    logoutButton.addEventListener(
+        "click",
+        logout
     );
 
 
@@ -1604,34 +2194,29 @@
     );
 
 
-    revisitButton.addEventListener(
+    backDashboardButton.addEventListener(
         "click",
-        startMistakeTest
+        showDashboard
     );
 
 
-    newTestButton.addEventListener(
+    continueAfterScoreButton.addEventListener(
         "click",
-        startNewTest
+        startLearning
     );
 
 
-    // =============================
-    // ENTER TO START
-    // =============================
-
-    numberOfWordsInput.addEventListener(
-        "keydown",
-        event => {
-
-            if (event.key === "Enter") {
-
-                startNormalTest();
-
-            }
-
-        }
+    dashboardAfterScoreButton.addEventListener(
+        "click",
+        showDashboard
     );
+
+
+    // =========================================================
+    // INITIAL LOAD
+    // =========================================================
+
+    loadDashboard();
 
 </script>
 
