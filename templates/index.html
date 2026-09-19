@@ -366,12 +366,14 @@
             background: var(--success-bg);
             border-color: var(--success-border);
             color: var(--success);
+            font-weight: 700;
         }
 
         .option-button.incorrect {
             background: var(--danger-bg);
             border-color: var(--danger-border);
             color: var(--danger);
+            font-weight: 700;
         }
 
         /* =========================
@@ -1327,7 +1329,7 @@
             // immediately render the first word.
 
             if (
-                currentQuestionIndex === 0
+                currentQuestionIndex < questions.length
             ) {
 
                 renderQuestion();
@@ -1475,108 +1477,55 @@
     // SELECT OPTION
     // =========================================================
 
-    async function selectOption(
-        button,
-        option,
-        index
-    ) {
+    async function selectOption(button, option, index) {
 
         if (selectedOption !== null) {
             return;
         }
 
-
         selectedOption = index;
 
-
         const buttons =
-            optionsElement.querySelectorAll(
-                ".option-button"
-            );
+            optionsElement.querySelectorAll(".option-button");
 
+        buttons.forEach((optionButton, optionIndex) => {
 
-        buttons.forEach(
-            (
-                optionButton,
-                optionIndex
-            ) => {
+            optionButton.disabled = true;
 
-                optionButton.disabled =
-                    true;
+            const currentOption =
+                questions[currentQuestionIndex].options[optionIndex];
 
-
-                const currentOption =
-                    questions[
-                        currentQuestionIndex
-                    ].options[
-                        optionIndex
-                    ];
-
-
-                if (
-                    currentOption.correct
-                ) {
-
-                    optionButton.classList.add(
-                        "correct"
-                    );
-
-                }
-
+            if (currentOption.correct) {
+                optionButton.classList.add("correct");
             }
-        );
-
+        });
 
         if (!option.correct) {
-
-            button.classList.add(
-                "incorrect"
-            );
-
+            button.classList.add("incorrect");
         }
 
+        // Save in background — don't block the UI
+        recordAnswer(
+            questions[currentQuestionIndex].word,
+            option.correct
+        );
 
-        const saved =
-            await recordAnswer(
-                questions[
-                    currentQuestionIndex
-                ].word,
-                option.correct
-            );
-
-
-        if (!saved) {
-            return;
-        }
-
-
-        dontKnowButton.disabled =
-            true;
-
+        dontKnowButton.disabled = true;
 
         updateAnsweredCount();
 
-
-        // Correct → automatically advance.
-
+        // Correct → immediately advance
         if (option.correct) {
 
-            setTimeout(
-                () => {
-                    goToNextQuestion();
-                },
-                100
-            );
+            setTimeout(() => {
+                goToNextQuestion();
+            }, 30);
 
             return;
         }
 
-
-        // Wrong → user must click Next.
-
-        nextButton.disabled =
-            false;
-
+        // Wrong → user must click Next
+        nextButton.disabled = false;
     }
 
 
@@ -1590,81 +1539,38 @@
             return;
         }
 
+        selectedOption = "dont-know";
 
-        selectedOption =
-            "dont-know";
+        optionsElement.classList.remove("hidden");
 
-
-        optionsElement.classList.remove(
-            "hidden"
-        );
-
-        showOptionsButton.classList.add(
-            "hidden"
-        );
-
+        showOptionsButton.classList.add("hidden");
 
         const buttons =
-            optionsElement.querySelectorAll(
-                ".option-button"
-            );
+            optionsElement.querySelectorAll(".option-button");
 
+        buttons.forEach((button, optionIndex) => {
 
-        buttons.forEach(
-            (
-                button,
-                optionIndex
-            ) => {
+            button.disabled = true;
 
-                button.disabled =
-                    true;
+            const currentOption =
+                questions[currentQuestionIndex].options[optionIndex];
 
-
-                const currentOption =
-                    questions[
-                        currentQuestionIndex
-                    ].options[
-                        optionIndex
-                    ];
-
-
-                if (
-                    currentOption.correct
-                ) {
-
-                    button.classList.add(
-                        "correct"
-                    );
-
-                }
-
+            if (currentOption.correct) {
+                button.classList.add("correct");
             }
+        });
+
+        // Save in background — don't block UI
+        recordAnswer(
+            questions[currentQuestionIndex].word,
+            false
         );
 
+        nextButton.disabled = false;
 
-        const saved =
-            await recordAnswer(
-                questions[
-                    currentQuestionIndex
-                ].word,
-                false
-            );
-
-
-        if (!saved) {
-            return;
-        }
-
-
-        nextButton.disabled =
-            false;
-
-        dontKnowButton.disabled =
-            true;
-
+        dontKnowButton.disabled = true;
 
         updateAnsweredCount();
-
     }
 
 
