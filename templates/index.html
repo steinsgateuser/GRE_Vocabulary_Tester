@@ -1375,10 +1375,10 @@
         wordElement.textContent =
             question.word;
 
-
+        const BatchSize = 100
         const batchPosition =
             (
-                currentQuestionIndex % 20
+                currentQuestionIndex % BatchSize
             ) + 1;
 
 
@@ -1388,7 +1388,7 @@
 
         const progressPercentage =
             (
-                batchPosition / 20
+                batchPosition / BatchSize
             ) * 100;
 
 

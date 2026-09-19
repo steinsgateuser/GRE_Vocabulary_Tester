@@ -424,7 +424,7 @@ def start_test():
 
         test_df = generate_learning_test(
             session["user_id"],
-            batch_size=50
+            batch_size=100
         )
 
         if test_df.empty:
