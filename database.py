@@ -149,219 +149,96 @@ def get_user_progress(user_id):
                 for row in rows
             ]
 
-def record_answer(user_id, word, correct, batch_number):
-
+def record_answer(user_id, word, correct, batch_number=None):
     with get_connection() as conn:
         with conn.cursor() as cur:
 
             cur.execute(
                 """
-                SELECT
-                    correct_count,
-                    wrong_count,
-                    progress,
-                    status
+                SELECT correct_count, wrong_count, status
                 FROM user_progress
-                WHERE user_id = %s
-                  AND word = %s
+                WHERE user_id = %s AND word = %s
                 """,
                 (user_id, word)
             )
 
             row = cur.fetchone()
 
-            # ------------------------------------------------
-            # First time seeing this word
-            # ------------------------------------------------
-
-            if not row:
-
+            if row is None:
                 if correct:
-
-                    cur.execute(
-                        """
-                        INSERT INTO user_progress (
-                            user_id,
-                            word,
-                            correct_count,
-                            wrong_count,
-                            progress,
-                            status,
-                            last_seen,
-                            last_batch
-                        )
-                        VALUES (
-                            %s,
-                            %s,
-                            1,
-                            0,
-                            1,
-                            'NEW',
-                            NOW(),
-                            %s
-                        )
-                        """,
-                        (
-                            user_id,
-                            word,
-                            batch_number
-                        )
-                    )
-
+                    status = "MASTERED"
+                    correct_count = 1
+                    wrong_count = 0
                 else:
-
-                    cur.execute(
-                        """
-                        INSERT INTO user_progress (
-                            user_id,
-                            word,
-                            correct_count,
-                            wrong_count,
-                            progress,
-                            status,
-                            last_seen,
-                            last_batch
-                        )
-                        VALUES (
-                            %s,
-                            %s,
-                            0,
-                            1,
-                            0,
-                            'REVIEW',
-                            NOW(),
-                            %s
-                        )
-                        """,
-                        (
-                            user_id,
-                            word,
-                            batch_number
-                        )
-                    )
-
-                return
-
-            correct_count, wrong_count, progress, status = row
-
-            # ------------------------------------------------
-            # MASTERED words stay MASTERED
-            # ------------------------------------------------
-
-            if status == "MASTERED":
+                    status = "REVIEW"
+                    correct_count = 0
+                    wrong_count = 1
 
                 cur.execute(
                     """
-                    UPDATE user_progress
-                    SET last_seen = NOW(),
-                        last_batch = %s
-                    WHERE user_id = %s
-                      AND word = %s
+                    INSERT INTO user_progress
+                    (
+                        user_id,
+                        word,
+                        correct_count,
+                        wrong_count,
+                        progress,
+                        status,
+                        last_seen,
+                        last_batch
+                    )
+                    VALUES
+                    (
+                        %s, %s, %s, %s, %s, %s,
+                        CURRENT_TIMESTAMP, %s
+                    )
                     """,
                     (
-                        batch_number,
                         user_id,
-                        word
+                        word,
+                        correct_count,
+                        wrong_count,
+                        1 if correct else 0,
+                        status,
+                        batch_number or 0
                     )
                 )
-
-                return
-
-            # ------------------------------------------------
-            # CORRECT ANSWER
-            # ------------------------------------------------
-
-            if correct:
-
-                new_correct_count = (
-                    correct_count + 1
-                )
-
-                new_progress = progress + 1
-
-                # --------------------------------------------
-                # Second consecutive successful learning step
-                # --------------------------------------------
-
-                if new_progress >= 2:
-
-                    cur.execute(
-                        """
-                        UPDATE user_progress
-                        SET
-                            correct_count = %s,
-                            progress = 2,
-                            status = 'MASTERED',
-                            last_seen = NOW(),
-                            last_batch = %s
-                        WHERE user_id = %s
-                          AND word = %s
-                        """,
-                        (
-                            new_correct_count,
-                            batch_number,
-                            user_id,
-                            word
-                        )
-                    )
-
-                # --------------------------------------------
-                # First successful learning step
-                # --------------------------------------------
-
-                else:
-
-                    new_status = (
-                        'REVIEW'
-                        if status == 'REVIEW'
-                        else 'NEW'
-                    )
-
-                    cur.execute(
-                        """
-                        UPDATE user_progress
-                        SET
-                            correct_count = %s,
-                            progress = 1,
-                            status = %s,
-                            last_seen = NOW(),
-                            last_batch = %s
-                        WHERE user_id = %s
-                          AND word = %s
-                        """,
-                        (
-                            new_correct_count,
-                            new_status,
-                            batch_number,
-                            user_id,
-                            word
-                        )
-                    )
-
-            # ------------------------------------------------
-            # WRONG ANSWER / I DON'T KNOW
-            # ------------------------------------------------
 
             else:
+                correct_count, wrong_count, status = row
+
+                if correct:
+                    correct_count += 1
+                    status = "MASTERED"
+                else:
+                    wrong_count += 1
+                    status = "REVIEW"
 
                 cur.execute(
                     """
                     UPDATE user_progress
                     SET
-                        wrong_count = wrong_count + 1,
-                        progress = 0,
-                        status = 'REVIEW',
-                        last_seen = NOW(),
+                        correct_count = %s,
+                        wrong_count = %s,
+                        progress = %s,
+                        status = %s,
+                        last_seen = CURRENT_TIMESTAMP,
                         last_batch = %s
                     WHERE user_id = %s
                       AND word = %s
                     """,
                     (
-                        batch_number,
+                        correct_count,
+                        wrong_count,
+                        1 if correct else 0,
+                        status,
+                        batch_number or 0,
                         user_id,
                         word
                     )
                 )
+
+        conn.commit()
 
 def get_dashboard_stats(user_id, total_words):
 
@@ -478,6 +355,15 @@ def get_queue_counts(user_id):
         "review": row[0] or 0,
         "validation": row[1] or 0
     }
+
+
+def reset_all_progress():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM user_progress")
+        conn.commit()
+
+    print("All user progress has been reset.")
 
 
 if __name__ == "__main__":

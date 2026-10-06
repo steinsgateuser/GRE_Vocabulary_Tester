@@ -24,7 +24,8 @@ def load_vocab():
         "Idx",
         "Word",
         "Connotation",
-        "Example / Mnemonics"
+        "Example / Mnemonics",
+        "Secondary Meanings"
     ]
 
     df["Cluster"] = df["Cluster"].ffill()

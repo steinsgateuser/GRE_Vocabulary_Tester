@@ -38,7 +38,7 @@ print(f"Total vocabulary: {len(df)} rows")
 # LEARNING QUEUE
 # ============================================================
 
-def generate_learning_test(user_id, batch_size=20):
+def generate_learning_test(user_id, mode="learning", batch_size=100):
 
     progress_data = get_user_progress(user_id)
 
@@ -47,90 +47,62 @@ def generate_learning_test(user_id, batch_size=20):
         for item in progress_data
     }
 
-    current_batch = session.get("batch_number", 1)
-
-    review_words = []
-    validation_words = []
-    new_words = []
+    selected_words = []
 
     for _, row in df.iterrows():
 
         word = row["Word"]
-
         item = progress_map.get(word)
 
-        if item is None:
+        # -----------------------------------------------------
+        # LEARNING TEST
+        # Only words that have never been attempted.
+        # -----------------------------------------------------
 
-            new_words.append(word)
-            continue
+        if mode == "learning":
 
-        status = item["status"]
-        progress = item["progress"]
-        last_batch = item.get("last_batch", 0)
+            if item is None:
+                selected_words.append(word)
 
-        if status == "MASTERED":
-            continue
+        # -----------------------------------------------------
+        # MASTERED TEST
+        # Only currently mastered words.
+        # -----------------------------------------------------
 
-        # REVIEW words are always eligible.
-        if status == "REVIEW":
+        elif mode == "mastered":
 
-            review_words.append(
-                (last_batch, word)
-            )
-            continue
+            if (
+                item is not None
+                and item["status"] == "MASTERED"
+            ):
+                selected_words.append(word)
 
-        # Validation words need one full batch gap.
-        if (
-            status == "NEW"
-            and progress == 1
-            and current_batch > last_batch
-        ):
+        # -----------------------------------------------------
+        # REVIEW TEST
+        # Only currently review words.
+        # -----------------------------------------------------
 
-            validation_words.append(
-                (last_batch, word)
-            )
-            continue
+        elif mode == "review":
 
-        # Otherwise ignore for this batch.
+            if (
+                item is not None
+                and item["status"] == "REVIEW"
+            ):
+                selected_words.append(word)
 
-    review_words.sort(key=lambda x: x[0])
-    validation_words.sort(key=lambda x: x[0])
+    random.shuffle(selected_words)
 
-    review_words = [word for _, word in review_words]
-    validation_words = [word for _, word in validation_words]
-
-    random.shuffle(new_words)
-
-    review_quota = round(batch_size * 0.30)
-    validation_quota = round(batch_size * 0.40)
-    new_quota = batch_size - review_quota - validation_quota
-
-    selected = []
-
-    selected.extend(review_words[:review_quota])
-    selected.extend(validation_words[:validation_quota])
-    selected.extend(new_words[:new_quota])
-
-    if len(selected) < batch_size:
-
-        selected_set = set(selected)
-
-        remaining = (
-            [w for w in review_words if w not in selected_set]
-            + [w for w in validation_words if w not in selected_set]
-            + [w for w in new_words if w not in selected_set]
-        )
-
-        selected.extend(
-            remaining[:batch_size - len(selected)]
-        )
+    # Never load more than batch_size.
+    selected_words = selected_words[:min(
+        len(selected_words),
+        batch_size
+    )]
 
     selected_df = df[
-        df["Word"].isin(selected[:batch_size])
+        df["Word"].isin(selected_words)
     ].copy()
 
     return selected_df
-
 
 # ============================================================
 # QUESTION GENERATION
@@ -413,37 +385,61 @@ def review_words():
 
 @app.route("/api/start-test", methods=["POST"])
 def start_test():
+
     if "user_id" not in session:
         return jsonify({"error": "Not logged in."}), 401
 
     try:
-        print("SESSION BEFORE TEST:", dict(session))
 
-        if "batch_number" not in session:
-            session["batch_number"] = 1
+        data = request.get_json(silent=True) or {}
+
+        mode = data.get("mode", "learning")
+
+        if mode not in {
+            "learning",
+            "mastered",
+            "review"
+        }:
+            return jsonify({
+                "error": "Invalid test mode."
+            }), 400
 
         test_df = generate_learning_test(
             session["user_id"],
+            mode=mode,
             batch_size=100
         )
 
         if test_df.empty:
+
+            messages = {
+                "learning": "All vocabulary words have been attempted.",
+                "mastered": "There are no mastered words to test.",
+                "review": "There are no review words to test."
+            }
+
             return jsonify({
                 "questions": [],
-                "message": "All vocabulary words have been mastered."
+                "message": messages[mode]
             })
 
         questions = build_questions(test_df)
 
-        session["batch_number"] += 1
-
-        return jsonify({"questions": questions})
+        return jsonify({
+            "questions": questions,
+            "mode": mode
+        })
 
     except Exception as e:
+
         import traceback
+
         print("ERROR STARTING TEST:", repr(e))
         traceback.print_exc()
-        return jsonify({"error": "Failed to generate test."}), 500
+
+        return jsonify({
+            "error": "Failed to generate test."
+        }), 500
 
 # ============================================================
 # LOGOUT

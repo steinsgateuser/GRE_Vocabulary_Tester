@@ -751,6 +751,20 @@
             </button>
 
             <button
+                id="mastered-test-button"
+                class="secondary-button"
+            >
+                Test Mastered Words
+            </button>
+
+            <button
+                id="review-test-button"
+                class="secondary-button"
+            >
+                Test Review Words
+            </button>
+
+            <button
                 id="review-button"
                 class="secondary-button"
             >
@@ -765,7 +779,6 @@
             </button>
 
         </div>
-
 
         <div
             id="dashboard-error"
@@ -1025,10 +1038,13 @@
 
     let sessionStarted = false;
 
+    let currentTestMode = "learning";
+
 
     // =========================================================
     // DOM ELEMENTS
     // =========================================================
+    const BatchSize  = 100;
 
     const dashboardScreen =
         document.getElementById("dashboard-screen");
@@ -1076,6 +1092,11 @@
     const logoutButton =
         document.getElementById("logout-button");
 
+    const masteredTestButton =
+        document.getElementById("mastered-test-button");
+
+    const reviewTestButton =
+        document.getElementById("review-test-button");
 
     const dashboardError =
         document.getElementById("dashboard-error");
@@ -1215,47 +1236,73 @@
     // =========================================================
 
     async function startLearning() {
-
         if (isLoadingBatch) {
             return;
         }
 
         sessionStarted = true;
-
         questions = [];
-
         currentQuestionIndex = 0;
-
         currentAnswers = [];
-
         mistakeWords = [];
-
         selectedOption = null;
+        currentTestMode = "learning";
+
+        dashboardScreen.classList.add("hidden");
+        reviewScreen.classList.add("hidden");
+        scoreScreen.classList.add("hidden");
+        quizScreen.classList.remove("hidden");
+
+        modeLabel.textContent = "Continue Learning";
+
+        await loadNextBatch("learning");
+    }
+
+    async function startMasteredTest() {
+        if (isLoadingBatch) {
+            return;
+        }
+
+        sessionStarted = true;
+        questions = [];
+        currentQuestionIndex = 0;
+        currentAnswers = [];
+        mistakeWords = [];
+        selectedOption = null;
+        currentTestMode = "mastered";
+
+        dashboardScreen.classList.add("hidden");
+        reviewScreen.classList.add("hidden");
+        scoreScreen.classList.add("hidden");
+        quizScreen.classList.remove("hidden");
+
+        modeLabel.textContent = "Test Mastered Words";
+
+        await loadNextBatch("mastered");
+    }
 
 
-        dashboardScreen.classList.add(
-            "hidden"
-        );
+    async function startReviewTest() {
+        if (isLoadingBatch) {
+            return;
+        }
 
-        reviewScreen.classList.add(
-            "hidden"
-        );
+        sessionStarted = true;
+        questions = [];
+        currentQuestionIndex = 0;
+        currentAnswers = [];
+        mistakeWords = [];
+        selectedOption = null;
+        currentTestMode = "review";
 
-        scoreScreen.classList.add(
-            "hidden"
-        );
+        dashboardScreen.classList.add("hidden");
+        reviewScreen.classList.add("hidden");
+        scoreScreen.classList.add("hidden");
+        quizScreen.classList.remove("hidden");
 
-        quizScreen.classList.remove(
-            "hidden"
-        );
+        modeLabel.textContent = "Test Review Words";
 
-
-        modeLabel.textContent =
-            "Continue Learning";
-
-
-        await loadNextBatch();
-
+        await loadNextBatch("review");
     }
 
 
@@ -1263,7 +1310,7 @@
     // LOAD NEXT BATCH
     // =========================================================
 
-    async function loadNextBatch() {
+    async function loadNextBatch(mode = "learning") {
 
         if (isLoadingBatch) {
             return;
@@ -1272,70 +1319,53 @@
         isLoadingBatch = true;
 
         nextButton.disabled = true;
-
         dontKnowButton.disabled = true;
-
         showOptionsButton.disabled = true;
-
 
         try {
 
-            const response =
-                await fetch(
-                    "/api/start-test",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-                        body: JSON.stringify({})
-                    }
-                );
+            const response = await fetch(
+                "/api/start-test",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        mode: mode
+                    })
+                }
+            );
 
-
-            const data =
-                await response.json();
-
+            const data = await response.json();
 
             if (!response.ok) {
-
                 throw new Error(
                     data.error ||
                     "Failed to load words."
                 );
-
             }
-
 
             if (
                 !data.questions ||
                 data.questions.length === 0
             ) {
-
-                showNoWordsAvailable();
-
+                showNoWordsAvailable(
+                    data.message ||
+                    "No words available."
+                );
                 return;
             }
 
-
             questions =
-                questions.concat(
-                    data.questions
-                );
-
-
-            // If this is the first batch,
-            // immediately render the first word.
+                questions.concat(data.questions);
 
             if (
-                currentQuestionIndex < questions.length
+                currentQuestionIndex <
+                questions.length
             ) {
-
                 renderQuestion();
-
             }
-
 
         } catch (error) {
 
@@ -1346,7 +1376,6 @@
             isLoadingBatch = false;
 
             showOptionsButton.disabled = false;
-
         }
     }
 
@@ -1375,7 +1404,6 @@
         wordElement.textContent =
             question.word;
 
-        const BatchSize = 100
         const batchPosition =
             (
                 currentQuestionIndex % BatchSize
@@ -1697,7 +1725,7 @@
             questions.length
         ) {
 
-            await loadNextBatch();
+            await loadNextBatch(currentTestMode);
 
             return;
         }
@@ -2021,24 +2049,16 @@
     // NO WORDS AVAILABLE
     // =========================================================
 
-    function showNoWordsAvailable() {
-
-        quizScreen.classList.add(
-            "hidden"
-        );
-
-        dashboardScreen.classList.remove(
-            "hidden"
-        );
-
+    function showNoWordsAvailable(message) {
+        quizScreen.classList.add("hidden");
+        dashboardScreen.classList.remove("hidden");
 
         alert(
-            "You have mastered all available vocabulary words! 🎉"
+            message ||
+            "No words are available for this test."
         );
 
-
         loadDashboard();
-
     }
 
 
@@ -2063,6 +2083,15 @@
         startLearning
     );
 
+    masteredTestButton.addEventListener(
+        "click",
+        startMasteredTest
+    );
+
+    reviewTestButton.addEventListener(
+        "click",
+        startReviewTest
+    );
 
     reviewButton.addEventListener(
         "click",
