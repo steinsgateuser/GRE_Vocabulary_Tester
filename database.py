@@ -357,13 +357,16 @@ def get_queue_counts(user_id):
     }
 
 
-def reset_all_progress():
+def reset_user_progress(user_id):
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute("DELETE FROM user_progress")
+            cur.execute(
+                "DELETE FROM user_progress WHERE user_id = %s",
+                (user_id,)
+            )
         conn.commit()
 
-    print("All user progress has been reset.")
+    print(f"Progress reset for user_id={user_id}")
 
 
 if __name__ == "__main__":

@@ -17,7 +17,8 @@ from database import (
     get_user_progress,
     record_answer,
     get_dashboard_stats,
-    get_review_words
+    get_review_words,
+    reset_user_progress
 )
 
 from vocab_processing import get_vocab_data, normalize_word
@@ -453,6 +454,25 @@ def logout():
     return redirect(
         url_for("home")
     )
+
+
+@app.route("/api/reset-progress", methods=["POST"])
+def reset_progress():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in."}), 401
+
+    try:
+        reset_user_progress(session["user_id"])
+
+        return jsonify({
+            "success": True,
+            "message": "Your progress has been reset."
+        })
+
+    except Exception as e:
+        import traceback
+        print("ERROR RESETTING PROGRESS:", repr(e))
+        traceback.print_exc()
 
 
 # ============================================================

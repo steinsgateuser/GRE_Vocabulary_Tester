@@ -778,6 +778,13 @@
                 Logout
             </button>
 
+            <button
+                id="reset-progress-button"
+                class="danger-button"
+            >
+                Reset My Progress
+            </button>
+
         </div>
 
         <div
@@ -1165,6 +1172,8 @@
             "dashboard-after-score-button"
         );
 
+    const resetProgressButton = document.getElementById("reset-progress-button");
+
 
     // =========================================================
     // LOAD DASHBOARD
@@ -1376,6 +1385,43 @@
             isLoadingBatch = false;
 
             showOptionsButton.disabled = false;
+        }
+    }
+
+    // Reset function to clear user progress
+    async function resetMyProgress() {
+        const confirmed = confirm(
+            "Are you sure?\n\n" +
+            "Your entire progress will be lost."
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                "/api/reset-progress",
+                {
+                    method: "POST"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                    "Failed to reset progress."
+                );
+            }
+
+            alert("Your progress has been reset.");
+
+            await showDashboard();
+
+        } catch (error) {
+            alert(error.message);
         }
     }
 
@@ -2144,6 +2190,11 @@
     dashboardAfterScoreButton.addEventListener(
         "click",
         showDashboard
+    );
+
+    resetProgressButton.addEventListener(
+        "click",
+        resetMyProgress
     );
 
 
